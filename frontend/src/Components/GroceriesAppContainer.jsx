@@ -2,6 +2,7 @@ import { useState } from "react";
 import CartContainer from "./CartContainer";
 import ProductsContainer from "./ProductsContainer";
 import NavBar from "./NavBar";
+import axios from "axios";
 
 export default function GroceriesAppContainer({ products }) {
   const [productQuantity, setProductQuantity] = useState(
@@ -9,7 +10,23 @@ export default function GroceriesAppContainer({ products }) {
   );
 
   const [cartList, setCartList] = useState([]);
+  const [productList, setProductList] = useState([]);
+  //useeffect
 
+  useEffect(() => {
+    handleProductsFromDB();
+  }, []);
+
+  //handlers
+  const handleProductsFromDB = async () => {
+    try {
+      await axios
+        .get("http://localhost:3000/products")
+        .then((result) => setProductList(result.data));
+    } catch (errpr) {
+      console.log(error.message);
+    }
+  };
   const handleAddQuantity = (productId, mode) => {
     if (mode === "cart") {
       const newCartList = cartList.map((product) => {
@@ -81,13 +98,13 @@ export default function GroceriesAppContainer({ products }) {
   const handleClearCart = () => {
     setCartList([]);
   };
-
+  //render
   return (
     <div>
       <NavBar quantity={cartList.length} />
       <div className="GroceriesApp-Container">
         <ProductsContainer
-          products={products}
+          products={productList}
           handleAddQuantity={handleAddQuantity}
           handleRemoveQuantity={handleRemoveQuantity}
           handleAddToCart={handleAddToCart}
